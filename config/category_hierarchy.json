@@ -1,0 +1,53 @@
+{
+  "priority_order": [
+    {"level": 1, "name": "CATEGORY 1 PLATINUM", "tier": "premium", "location": "any"},
+    {"level": 2, "name": "CATEGORY 1 PREMIUM", "tier": "premium", "location": "any"},
+    {"level": 3, "name": "CATEGORY 1 GOLD", "tier": "premium", "location": "any"},
+    {"level": 4, "name": "CATEGORY 1 SILVER", "tier": "high", "location": "any"},
+    {"level": 5, "name": "CATEGORY 1 NORMAL", "tier": "high", "location": "any"},
+    {"level": 6, "name": "CATEGORY 2 GOLD", "tier": "mid", "location": "any"},
+    {"level": 7, "name": "CATEGORY 2 SUPERIOR", "tier": "mid", "location": "any"},
+    {"level": 8, "name": "CATEGORY 2 NORMAL", "tier": "mid", "location": "any"},
+    {"level": 9, "name": "CATEGORY 2 LATERAL", "tier": "low", "location": "longside_high"},
+    {"level": 10, "name": "CATEGORY 3", "tier": "low", "location": "shortside"},
+    {"level": 11, "name": "CATEGORY 4", "tier": "low", "location": "shortside"}
+  ],
+  
+  "category_aliases": {
+    "CAT 1": "CATEGORY 1 NORMAL",
+    "CAT 2": "CATEGORY 2 SUPERIOR",
+    "CAT 3": "CATEGORY 2 NORMAL",
+    "CAT 4": "CATEGORY 3",
+    "PLUS": "CATEGORY 1 SUPERIOR",
+    "PREMIUM": "CATEGORY 1 SILVER",
+    "PLATINUM": "CATEGORY 1 PREMIUM",
+    "Category 1": "CATEGORY 1 NORMAL",
+    "Category 1 Premium": "CATEGORY 1 PREMIUM",
+    "Category 1 Platinum": "CATEGORY 1 PLATINUM",
+    "Category 1 Gold": "CATEGORY 1 GOLD",
+    "Category 1 Silver": "CATEGORY 1 SILVER",
+    "Category 2": "CATEGORY 2 NORMAL",
+    "Category 2 Lateral": "CATEGORY 2 LATERAL",
+    "Category 3": "CATEGORY 3",
+    "Category 4": "CATEGORY 4",
+    "Short Side": "CATEGORY 3",
+    "Short Side | 1st Ring": "CATEGORY 2 NORMAL",
+    "Long Side": "CATEGORY 2 LATERAL",
+    "Long Side | 1st Ring / 2nd Ring": "CATEGORY 1 NORMAL",
+    "CATEGORÍA 1 (CAT1)": "CATEGORY 1 NORMAL",
+    "CATEGORÍA 2 (CAT2)": "CATEGORY 2 NORMAL",
+    "CATEGORÍA 2 (CAT2) - LATERAL": "CATEGORY 2 LATERAL",
+    "CATEGORÍA 3 (CAT3)": "CATEGORY 3",
+    "CATEGORIA 1 PREMIUM": "CATEGORY 1 PREMIUM"
+  },
+  
+  "upgrade_restrictions": {
+    "shortside_low_tier": {
+      "description": "Short Side orders (Cat 3/4, behind goal) cannot be upgraded to CATEGORY 2 LATERAL (blocks 600-710) because high tier lateral is not a real upgrade",
+      "from_categories": ["CATEGORY 3", "CATEGORY 4", "Short Side"],
+      "blocked_upgrades": ["CATEGORY 2 LATERAL"]
+    }
+  },
+  
+  "lateral_high_blocks": ["601", "602", "603", "604", "605", "606", "607", "608", "609", "610", "701", "702", "703", "704", "705", "706", "707", "708", "709", "710"]
+}
