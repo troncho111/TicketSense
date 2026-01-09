@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block content %}
+{% if request.query_params.get('saved') %}
+<div style="background: #1a3020; border: 1px solid #22c55e; border-radius: 12px; padding: 16px; margin-bottom: 14px; text-align: center;">
+  <b style="color: #22c55e; font-size: 16px;">ההגדרות נשמרו בהצלחה!</b>
+</div>
+{% endif %}
+
+<section class="card">
+  <h2>{{ t('google_setup_title') }}</h2>
+
+  <form method="post" action="/settings/save" class="form">
+    <label>{{ t('language') }}
+      <select name="language">
+        <option value="he" {% if settings.language=='he' %}selected{% endif %}>עברית</option>
+        <option value="en" {% if settings.language=='en' %}selected{% endif %}>English</option>
+      </select>
+    </label>
+
+    <label>
+      <input type="checkbox" name="auto_run_enabled" value="1" {% if settings.auto_run_enabled %}checked{% endif %}/>
+      {{ t('toggle_auto') }}
+    </label>
+
+    <label>{{ t('poll_seconds') }}
+      <input type="number" name="poll_seconds" value="{{ settings.poll_seconds }}" min="5"/>
+    </label>
+
+    <label>{{ t('mode') }}
+      <select name="mode">
+        <option value="suggest" {% if settings.mode=='suggest' %}selected{% endif %}>{{ t('mode_suggest') }}</option>
+        <option value="assign" {% if settings.mode=='assign' %}selected{% endif %}>{{ t('mode_assign') }}</option>
+      </select>
+    </label>
+
+    <hr/>
+
+    <div style="background: #1a3020; border: 1px solid #22c55e; border-radius: 12px; padding: 12px; margin-bottom: 14px;">
+      <b style="color: #22c55e;">Google Sheets מחובר!</b><br/>
+      <span style="color: #9ba8c7; font-size: 13px;">החיבור מנוהל אוטומטית דרך Replit. רק הזן את מזהי הגיליונות למטה.</span>
+    </div>
+
+    <div class="grid2">
+      <label>{{ t('orders_sheet_id') }}
+        <input name="orders_spreadsheet_id" value="{{ settings.google.orders_spreadsheet_id }}"/>
+      </label>
+      <label>{{ t('orders_tab') }}
+        <input name="orders_tab" value="{{ settings.google.orders_tab }}"/>
+      </label>
+      <label>{{ t('tickets_sheet_id') }}
+        <input name="tickets_spreadsheet_id" value="{{ settings.google.tickets_spreadsheet_id }}"/>
+      </label>
+      <label>{{ t('tickets_tab') }}
+        <input name="tickets_tab" value="{{ settings.google.tickets_tab }}"/>
+      </label>
+    </div>
+
+    <button class="btn" type="submit">{{ t('save') }}</button>
+  </form>
+</section>
+
+<section class="card">
+  <h3>איך למצוא את מזהה הגיליון?</h3>
+  <p>
+    פתח את הגיליון ב-Google Sheets והסתכל על הכתובת:<br/>
+    <code>https://docs.google.com/spreadsheets/d/<b style="color:#22c55e;">SPREADSHEET_ID</b>/edit</code><br/>
+    העתק את החלק המודגש - זה מזהה הגיליון.
+  </p>
+</section>
+{% endblock %}
