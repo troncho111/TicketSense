@@ -1,0 +1,13 @@
+{
+  "language": "he",
+  "auto_run_enabled": false,
+  "poll_seconds": 60,
+  "mode": "suggest",
+  "google": {
+    "service_account_json": "",
+    "orders_spreadsheet_id": "",
+    "orders_tab": "Sheet1",
+    "tickets_spreadsheet_id": "",
+    "tickets_tab": "Sheet1"
+  }
+}
