@@ -1,0 +1,50 @@
+{
+  "sources": {
+    "livefootballtickets": {
+      "allow_sch": false
+    },
+    "footballticketnet": {
+      "allow_sch": true
+    },
+    "sportsevents365": {
+      "allow_sch": true
+    },
+    "tixstock": {
+      "allow_sch": false
+    },
+    "goldenseat": {
+      "allow_sch": true,
+      "sch_priority": "last",
+      "enabled": true
+    }
+  },
+  "single_rule": {
+    "strict_single_only": false,
+    "behavior_if_no_single": "USE_PAIR"
+  },
+  "pairing_priority": {
+    "when_allow_sch": [
+      "SCH",
+      "PAIR"
+    ],
+    "when_disallow_sch": [
+      "PAIR"
+    ],
+    "goldenseat_priority": [
+      "PAIR",
+      "SCH"
+    ]
+  },
+  "together_logic": {
+    "stadium_pattern": "PARITY_STEP_2",
+    "step": 2
+  },
+  "protection": {
+    "do_not_break_groups_for_smaller_orders": true,
+    "protect_group_sizes": [
+      4,
+      5,
+      6
+    ]
+  }
+}
