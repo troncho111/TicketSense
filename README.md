@@ -30,5 +30,15 @@ This project implements a **rule-based ticket assignment engine** for Real Madri
 - Manual: click "הרץ ידני" in Dashboard.
 - Auto: toggle Auto and set poll interval + mode (Suggest / Auto assign).
 
+## Deployment to Production
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed instructions on deploying to:
+- Railway (recommended)
+- Render
+- Heroku
+- Docker
+
+The app supports both Replit connectors (for Replit deployment) and Service Account JSON (for production deployment).
+
 ## IMPORTANT
 Do not change business rules in code without syncing `config/seating_rules.json`.

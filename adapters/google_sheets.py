@@ -7,9 +7,11 @@ from datetime import datetime
 try:
     import gspread
     from google.oauth2.credentials import Credentials
+    from google.oauth2.service_account import Credentials as ServiceAccountCredentials
 except Exception:
     gspread = None
     Credentials = None
+    ServiceAccountCredentials = None
 
 SCOPES = [
     "https://www.googleapis.com/auth/spreadsheets",
@@ -17,8 +19,10 @@ SCOPES = [
 ]
 
 _connection_settings = None
+_client_cache = None
 
 def _get_access_token() -> str:
+    """Get access token from Replit connectors (for Replit deployment)"""
     global _connection_settings
     
     if _connection_settings:
@@ -67,12 +71,53 @@ def _get_access_token() -> str:
     return access_token
 
 def _get_client():
+    """Get gspread client - supports both Service Account JSON and Replit connectors"""
+    global _client_cache
+    
     if not gspread:
         raise RuntimeError("Missing dependency. Run: pip install gspread google-auth")
     
+    # Check if we have Service Account JSON in settings (for production deployment)
+    try:
+        from pathlib import Path
+        config_dir = Path(__file__).parent.parent / "config"
+        local_settings_path = config_dir / "local_settings.json"
+        
+        if local_settings_path.exists():
+            settings = json.loads(local_settings_path.read_text(encoding="utf-8"))
+            service_account_json_str = settings.get("google", {}).get("service_account_json", "").strip()
+            
+            if service_account_json_str:
+                try:
+                    # Parse the JSON string
+                    service_account_info = json.loads(service_account_json_str)
+                    # Create credentials from service account
+                    if ServiceAccountCredentials:
+                        creds = ServiceAccountCredentials.from_service_account_info(
+                            service_account_info, scopes=SCOPES
+                        )
+                        _client_cache = gspread.authorize(creds)
+                        return _client_cache
+                except json.JSONDecodeError:
+                    # Not valid JSON, try as file path
+                    if os.path.exists(service_account_json_str):
+                        if ServiceAccountCredentials:
+                            creds = ServiceAccountCredentials.from_service_account_file(
+                                service_account_json_str, scopes=SCOPES
+                            )
+                            _client_cache = gspread.authorize(creds)
+                            return _client_cache
+    except Exception:
+        pass  # Fall through to Replit connector method
+    
+    # Fallback to Replit connectors (for Replit deployment)
     access_token = _get_access_token()
-    creds = Credentials(token=access_token, scopes=SCOPES)
-    return gspread.authorize(creds)
+    if Credentials:
+        creds = Credentials(token=access_token, scopes=SCOPES)
+        _client_cache = gspread.authorize(creds)
+        return _client_cache
+    
+    raise RuntimeError("Could not initialize Google Sheets client")
 
 def read_sheet(spreadsheet_id: str, tab: str) -> List[List[Any]]:
     client = _get_client()

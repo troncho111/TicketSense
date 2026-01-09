@@ -4,6 +4,7 @@ import asyncio
 from pathlib import Path
 from typing import Dict, List, Optional
 from datetime import datetime
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request, Form
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse, StreamingResponse
@@ -397,10 +398,6 @@ def sort_blocks_by_exclusivity(blocks: List[str], source: str) -> List[str]:
     
     return sorted(blocks, key=exclusivity_key)
 
-app = FastAPI()
-app.mount("/static", StaticFiles(directory=str(APP_DIR / "web/static")), name="static")
-templates = Jinja2Templates(directory=str(APP_DIR / "web/templates"))
-
 auto_task: Optional[asyncio.Task] = None
 
 async def auto_loop():
@@ -411,11 +408,32 @@ async def auto_loop():
             await asyncio.sleep(1)
             continue
         try:
-            await run_once(settings, commit=(settings.get("mode") == "assign"))
+            # Run sync function in thread pool
+            loop = asyncio.get_event_loop()
+            await loop.run_in_executor(None, run_once_sync, settings, settings.get("mode") == "assign", False)
         except Exception as e:
             # swallow to keep loop alive
             pass
         await asyncio.sleep(int(settings.get("poll_seconds", 60)))
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    ensure_local_settings()
+    global auto_task
+    auto_task = asyncio.create_task(auto_loop())
+    yield
+    # Shutdown
+    if auto_task:
+        auto_task.cancel()
+        try:
+            await auto_task
+        except asyncio.CancelledError:
+            pass
+
+app = FastAPI(lifespan=lifespan)
+app.mount("/static", StaticFiles(directory=str(APP_DIR / "web/static")), name="static")
+templates = Jinja2Templates(directory=str(APP_DIR / "web/templates"))
 
 def run_once_sync(settings: Dict, commit: bool, resume: bool = False):
     global stop_requested, is_running, last_results
@@ -582,12 +600,6 @@ def run_once_sync(settings: Dict, commit: bool, resume: bool = False):
     finally:
         is_running = False
 
-@app.on_event("startup")
-async def startup_event():
-    ensure_local_settings()
-    global auto_task
-    auto_task = asyncio.create_task(auto_loop())
-
 @app.get("/", response_class=HTMLResponse)
 async def dashboard(request: Request):
     ensure_local_settings()
@@ -620,6 +632,7 @@ async def save_settings(
     auto_run_enabled: Optional[str] = Form(None),
     poll_seconds: int = Form(60),
     mode: str = Form("suggest"),
+    service_account_json: str = Form(""),
     orders_spreadsheet_id: str = Form(""),
     orders_tab: str = Form("Sheet1"),
     tickets_spreadsheet_id: str = Form(""),
@@ -631,6 +644,9 @@ async def save_settings(
     settings["auto_run_enabled"] = bool(auto_run_enabled)
     settings["poll_seconds"] = int(poll_seconds)
     settings["mode"] = mode
+    # Only update service_account_json if provided (don't overwrite with empty)
+    if service_account_json.strip():
+        settings["google"]["service_account_json"] = service_account_json.strip()
     settings["google"]["orders_spreadsheet_id"] = orders_spreadsheet_id
     settings["google"]["orders_tab"] = orders_tab
     settings["google"]["tickets_spreadsheet_id"] = tickets_spreadsheet_id

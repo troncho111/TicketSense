@@ -35,10 +35,10 @@
 
     <hr/>
 
-    <div style="background: #1a3020; border: 1px solid #22c55e; border-radius: 12px; padding: 12px; margin-bottom: 14px;">
-      <b style="color: #22c55e;">Google Sheets מחובר!</b><br/>
-      <span style="color: #9ba8c7; font-size: 13px;">החיבור מנוהל אוטומטית דרך Replit. רק הזן את מזהי הגיליונות למטה.</span>
-    </div>
+    <label>{{ t('service_account_json') }} (לפריסה ב-production)
+      <textarea name="service_account_json" rows="8" placeholder='{"type": "service_account", "project_id": "...", ...}' style="font-family: monospace; font-size: 11px;">{{ settings.google.service_account_json if settings.google.service_account_json else '' }}</textarea>
+      <small style="color: #9ba8c7; font-size: 12px;">הדבק את ה-JSON של Service Account כאן (או השאר ריק לשימוש ב-Replit connectors)</small>
+    </label>
 
     <div class="grid2">
       <label>{{ t('orders_sheet_id') }}
