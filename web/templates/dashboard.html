@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="card">
+  <h2>{{ t('nav_dashboard') }}</h2>
+
+  <div class="row" style="gap: 10px;">
+    <button id="startBtn" class="btn" style="background:#28a745;">התחל</button>
+    <button id="continueBtn" class="btn" style="background:#007bff;" disabled>המשך</button>
+    <button id="stopBtn" class="btn" style="background:#dc3545;" disabled>עצור</button>
+  </div>
+  <div id="statusLine" class="row" style="margin-top:10px;">
+    <span id="statusText" style="color:#888;">מוכן</span>
+  </div>
+</section>
+
+<section class="card">
+  <div id="progressContainer" class="progress-container">
+    <div class="progress-bar-wrapper">
+      <div id="progressBar" class="progress-bar animated"></div>
+    </div>
+    <div class="progress-text">
+      <span id="progressStep" class="progress-step">מתחיל...</span>
+    </div>
+  </div>
+</section>
+
+<section class="card log-section">
+  <div class="log-header">
+    <h3>לוג פעילות</h3>
+    <button id="clearLogBtn" class="btn secondary" style="padding: 6px 12px; font-size: 12px;">נקה לוג</button>
+  </div>
+  <div id="logBox" class="log-box">
+    <div class="result-empty">לחץ "הרץ ידני" כדי להתחיל</div>
+  </div>
+</section>
+
+<section class="card results-section">
+  <h3>תוצאות אחרונות</h3>
+  <div id="resultsContainer">
+    <div class="result-empty">עדיין אין תוצאות להציג</div>
+  </div>
+</section>
+
+<section class="card">
+  <h3>{{ t('note') }}</h3>
+  <p>
+    <b>Manual:</b> לוחץ "הרץ ידני" ורואה תוצאות בזמן אמת בלוג למעלה.<br/>
+    <b>Auto:</b> מפעיל אוטו-ראן והמערכת רצה כל {{ settings.poll_seconds }} שניות.
+  </p>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  window.APP_SETTINGS = {{ settings | tojson }};
+</script>
+{% endblock %}
