@@ -1,0 +1,45 @@
+name: Auto Push and Deploy
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Test imports
+      run: |
+        python -c "import main; print('✓ Main module imports successfully')"
+        python -c "from adapters.google_sheets import _get_client; print('✓ Google Sheets adapter imports successfully')"
+        python -c "from engine.allocator import choose_tickets_for_order; print('✓ Allocator imports successfully')"
+    
+    - name: Check code
+      run: |
+        python -m py_compile main.py
+        python -m py_compile adapters/google_sheets.py
+        python -m py_compile engine/allocator.py
+        echo "✓ All files compile successfully"
+
+  notify:
+    needs: test
+    runs-on: ubuntu-latest
+    if: success()
+    steps:
+    - name: Success notification
+      run: |
+        echo "✅ All tests passed! Code is ready for deployment."
+        echo "🚀 You can now deploy to Railway/Render using the Dockerfile"
